@@ -12,7 +12,6 @@ pro = ts.pro_api()
 # 获得当天的日期
 timestamp = time.time()
 today = time.strftime("%Y%m%d", time.localtime(timestamp))
-today = '20190912'
 
 file = today + '.csv'
 if not os.path.exists(file):
@@ -23,6 +22,8 @@ if not os.path.exists(file):
     all_stock = Stock.get_all_stocks()
     for ts_code, group in grouped:
         one_stock = all_stock[all_stock['ts_code'] == ts_code]
+        if one_stock.empty:
+            continue
         stock_name = one_stock['name'].iloc[0]
         net_buy = group['net_buy'].sum()
         percent = Stock.get_stock_basic(ts_code=ts_code, date=today)['pct_chg'].iloc[0]
