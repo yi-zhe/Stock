@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-stocks = open('../stocks_line.txt', 'r')
+stocks = open('../stocks_line.data', 'r')
 
 writer = open('../a.md', 'w')
 
