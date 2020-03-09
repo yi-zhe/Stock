@@ -9,7 +9,7 @@ today = time.strftime("%Y%m%d", time.localtime(timestamp))
 
 stocks = []
 stock_codes = []
-stocksFileContent = open('observed_stocks.txt', 'r')
+stocksFileContent = open('observed_stocks.data', 'r')
 for stockLineData in stocksFileContent:
     stockLineData = stockLineData.strip('\n')
     stock_detail = stockLineData.split()
@@ -18,10 +18,12 @@ for stockLineData in stocksFileContent:
     stock_codes.append(code)
     start = stock_detail[2]
     to = stock_detail[3]
-    stock = StockModel.StockModel(name, code, start, to)
+    stock = StockModel.StockModel(name, code, int(start), int(to))
     stocks.append(stock)
 
 allData = Stock.get_stock_basic(','.join(stock_codes), today)
+
+assert (allData.shape[0] == len(stocks))
 
 for index, row in allData.iterrows():
     stock = stocks[index]
