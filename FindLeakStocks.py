@@ -11,6 +11,8 @@ stocks = []
 stock_codes = []
 stocksFileContent = open('observed_stocks.data', 'r')
 for stockLineData in stocksFileContent:
+    if stockLineData.startswith('#'):
+        continue
     stockLineData = stockLineData.strip('\n')
     stock_detail = stockLineData.split()
     name = stock_detail[0]
@@ -21,15 +23,21 @@ for stockLineData in stocksFileContent:
     stock = StockModel.StockModel(name, code, int(start), int(to))
     stocks.append(stock)
 
-allData = Stock.get_stock_basic(','.join(stock_codes), today)
+todayStockData = Stock.get_stock_basic(','.join(stock_codes), today)
 
-assert (allData.shape[0] == len(stocks))
+# 保证请求股票的数量与返回的数量是一致的
+assert (todayStockData.shape[0] == len(stocks))
 
-for index, row in allData.iterrows():
-    stock = stocks[index]
-    stock.openP = row[2] * 100
-    stock.low = row[4] * 100
-    stock.close = row[5] * 100
+codeStockDict = {}
+
+for index, row in todayStockData.iterrows():
+    codeStockDict[row[0]] = row
+
+for stock in stocks:
+    series = codeStockDict[stock.code]
+    stock.openP = series[2] * 100
+    stock.low = series[4] * 100
+    stock.close = series[5] * 100
     stock.calc()
     if stock.is_leak:
         print(stock.name)
